@@ -2,20 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@layer base {
+    body {
+        @apply bg-neutral-600 text-white;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+    font-family: "Digital Numbers Regular";
+    src: local("Digital Numbers Regular"),
+        url("../pages/fonts/DigitalNumbers-Regular.woff") format("woff");
 }
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@font-face {
+    font-family: "Monofonto Regular";
+    src: local("Monofonto Regular"),
+        url("../pages/fonts/monofonto.regular.woff") format("woff");
 }

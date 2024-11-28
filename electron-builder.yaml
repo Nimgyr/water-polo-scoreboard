@@ -1,0 +1,6 @@
+appId: "scoreboard"
+productName: "water polo scoreboard"
+copyright: ""
+win:
+    target: ["dir", "portable", "zip"]
+    icon: "build/icon.ico"
