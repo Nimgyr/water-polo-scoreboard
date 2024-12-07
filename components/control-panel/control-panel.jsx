@@ -1,6 +1,5 @@
 import { PeriodControl } from "./period-control";
 import { RemovalsControl } from "./removals-control";
-import { RemovalsTest } from "./removals-test";
 import { ScoreControl } from "./score-control";
 import { ShotClockControl } from "./shot-clock-control";
 import { TimeOutControl } from "./time-out-control";
@@ -34,6 +33,8 @@ export function ControlPanel({
         setLeftPlayers,
         rightPlayers,
         setRightPlayers,
+        teamData,
+        setTeamData,
     } = gameState;
 
     return (
@@ -47,6 +48,8 @@ export function ControlPanel({
                         handleScorePlusClick={handleLeftScorePlusClick}
                         teamName={leftTeamName}
                         setTeamNameMain={setleftTeamName}
+                        teamData={teamData}
+                        setTeamData={setTeamData}
                     />
                 </div>
                 <div className="basis-1/2">
@@ -83,17 +86,14 @@ export function ControlPanel({
                         handleScorePlusClick={handleRightScorePlusClick}
                         teamName={rightTeamName}
                         setTeamNameMain={setRightTeamName}
+                        teamData={teamData}
+                        setTeamData={setTeamData}
                     />
                 </div>
             </div>
             <div className="flex  flex-row">
                 <div className="flex justify-center basis-1/4">
-                    {/* <RemovalsControl
-                        team={"white"}
-                        players={leftPlayers}
-                        setPlayers={setLeftPlayers}
-                    /> */}
-                    <RemovalsTest
+                    <RemovalsControl
                         team={"white"}
                         players={leftPlayers}
                         setPlayers={setLeftPlayers}
@@ -103,12 +103,7 @@ export function ControlPanel({
                     <TimerControl timerState={timerState} />
                 </div>
                 <div className="flex justify-center basis-1/4">
-                    {/* <RemovalsControl
-                        team={"blue"}
-                        players={rightPlayers}
-                        setPlayers={setRightPlayers}
-                    /> */}
-                    <RemovalsTest
+                    <RemovalsControl
                         team={"blue"}
                         players={rightPlayers}
                         setPlayers={setRightPlayers}

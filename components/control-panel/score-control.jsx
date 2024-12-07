@@ -5,7 +5,7 @@
  */
 
 import { UiButton } from "../uikit/ui-button";
-import { EditTeamButton } from "./edit-team-button";
+import { EditTeamSelect } from "./edit-team-select";
 
 export function ScoreControl({
     team,
@@ -14,14 +14,18 @@ export function ScoreControl({
     handleScorePlusClick,
     setTeamNameMain,
     teamName,
+    teamData,
+    setTeamData,
 }) {
     return (
         <div className="flex flex-col items-center">
             <div className="flex flex-row justify-center">
-                <EditTeamButton
+                <EditTeamSelect
                     setTeamNameMain={setTeamNameMain}
                     team={team}
                     teamNameMain={teamName}
+                    teamData={teamData}
+                    setTeamData={setTeamData}
                 />
             </div>
             <div className="bg-black  rounded-3xl max-w-[150px] p-2 aspect-square  flex flex-col justify-center items-center">

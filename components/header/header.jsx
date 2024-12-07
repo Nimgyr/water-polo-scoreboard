@@ -1,11 +1,17 @@
 import Image from "next/image";
 import LogoSrc from "./logo.svg";
+import TeamNamesControl from "../control-panel/team-names-control";
 
 export function Header({
     openSecondWindow,
+    openMiniWindow,
     resetGame,
     toggleTimeOut,
     isTimeOut,
+    teamData,
+    setTeamData,
+    setTournamentName,
+    tournamentName,
 }) {
     return (
         <header className="flex h-10 items-center px-8 bg-white shadow-lg">
@@ -15,9 +21,12 @@ export function Header({
                 alt="logo"
             />
             <div className="ml-auto flex gap-10">
-                <button className="flex items-center font-semibold text-deepBlue hover:text-blue-500 transition-colors">
-                    Начать соревнования
-                </button>
+                <TeamNamesControl
+                    teamData={teamData}
+                    setTeamData={setTeamData}
+                    tournamentName={tournamentName}
+                    setTournamentName={setTournamentName}
+                />
                 <button
                     onClick={toggleTimeOut}
                     className="flex items-center font-semibold text-deepBlue hover:text-blue-500 transition-colors"
@@ -29,6 +38,12 @@ export function Header({
                     className="flex items-center font-semibold text-deepBlue hover:text-blue-500 transition-colors"
                 >
                     Новая игра
+                </button>
+                <button
+                    onClick={openMiniWindow}
+                    className="flex items-center font-semibold text-deepBlue hover:text-blue-500 transition-colors"
+                >
+                    Мини табло
                 </button>
                 <button
                     onClick={openSecondWindow}

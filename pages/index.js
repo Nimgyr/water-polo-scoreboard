@@ -10,12 +10,20 @@ import { useShotClock } from "@/components/custom-hooks/use-shot-clock";
 import { useTimer } from "@/components/custom-hooks/use-timer";
 
 import { useTimeOut } from "@/components/custom-hooks/use-time-out";
+import NewMiniWindowComponent from "@/components/new-window/new-mini-window";
+import { MiniScoreboard } from "@/components/mini-scoreboard/mini-scoreboard";
 
 export default function Home() {
     const [isNewWindow, setIsNewWindow] = useState(false);
     let openNewWindow = () => {
         setIsNewWindow(true);
     };
+
+    const [isMiniWindow, setIsMiniWindow] = useState(false);
+    let openMiniWindow = () => {
+        setIsMiniWindow(true);
+    };
+
     const gameState = useGameState();
 
     const shotClockState = useShotClock();
@@ -40,9 +48,14 @@ export default function Home() {
         <div className="h-screen">
             <Header
                 openSecondWindow={openNewWindow}
+                openMiniWindow={openMiniWindow}
                 resetGame={resetGame}
                 toggleTimeOut={toggleTimeOut}
                 isTimeOut={isTimeOut}
+                teamData={gameState.teamData}
+                setTeamData={gameState.setTeamData}
+                tournamentName={gameState.tournamentName}
+                setTournamentName={gameState.setTournamentName}
             />
             <ControlPanel
                 gameState={gameState}
@@ -76,6 +89,20 @@ export default function Home() {
                             />
                         </div>
                     </NewWindowComponent>
+                )}
+                {isMiniWindow && (
+                    <NewMiniWindowComponent
+                        onClose={() => setIsMiniWindow(false)}
+                    >
+                        <MiniScoreboard
+                            period={gameState.period}
+                            leftScore={gameState.leftScore}
+                            rightScore={gameState.rightScore}
+                            rightTeamName={gameState.rightTeamName}
+                            leftTeamName={gameState.leftTeamName}
+                            secondsTimer={timerState.secondsTimer}
+                        />
+                    </NewMiniWindowComponent>
                 )}
             </div>
         </div>

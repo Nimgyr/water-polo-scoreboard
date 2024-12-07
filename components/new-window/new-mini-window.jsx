@@ -1,7 +1,7 @@
 import { Component } from "react";
 import ReactDOM from "react-dom";
 
-class NewWindowComponent extends Component {
+class NewMiniWindowComponent extends Component {
     // The container for the new window's content
     containerEl = document.createElement("div");
     style = document.createElement("style");
@@ -12,7 +12,7 @@ class NewWindowComponent extends Component {
         this.style.textContent = `@tailwind base;  @tailwind components;  @tailwind utilities;`;
         this.externalWindow = window.open(
             "",
-            "NewWindowComponent",
+            "NewMiniWindowComponent",
             "autoHideMenuBar = true,"
         );
         if (this.externalWindow) {
@@ -29,4 +29,4 @@ class NewWindowComponent extends Component {
     }
 }
 
-export default NewWindowComponent;
+export default NewMiniWindowComponent;

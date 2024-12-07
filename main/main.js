@@ -1,6 +1,7 @@
 import serve from "electron-serve";
-import * as path from "path";
 import { app, BrowserWindow } from "electron";
+
+import * as path from "path";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";

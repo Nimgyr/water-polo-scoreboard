@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCompetition, getTeams } from "../API/api";
 
 export function useGameState() {
+    const [teamData, setTeamData] = useState([]);
     const [leftTeamName, setleftTeamName] = useState("Белые");
     const [rightTeamName, setRightTeamName] = useState("Синие");
     const [tournamentName, setTournamentName] = useState(
         "Первый тур Первенства России по водному поло среди юношей до 18 лет"
     );
+
+    useEffect(() => {
+        getTeams()
+            .then((res) => res.json())
+            .then((data) => setTeamData(data));
+
+        getCompetition()
+            .then((res) => res.json())
+            .then((data) => setTournamentName(data[0].name));
+    }, []);
 
     const initialPlayersState = [
         {
@@ -106,8 +118,8 @@ export function useGameState() {
     const resetState = () => {
         setleftTeamName("Белые");
         setRightTeamName("Синие");
-        setLeftPlayers([]);
-        setRightPlayers([]);
+        setLeftPlayers(initialPlayersState);
+        setRightPlayers(initialPlayersState);
         setPeriod(1);
         setLeftScore(0);
         setRightScore(0);
@@ -134,5 +146,7 @@ export function useGameState() {
         rightPlayers,
         setRightPlayers,
         resetState,
+        teamData,
+        setTeamData,
     };
 }
