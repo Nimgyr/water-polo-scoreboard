@@ -1,12 +1,8 @@
-import { contextBridge, ipcRenderer } from "electron";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("electronAPI", {
-    on: (channel, callback) => {
-        ipcRenderer.on(channel, callback);
-    },
-    send: (channel, args) => {
-        ipcRenderer.send(channel, args);
-    },
-    openSecondWindow: () => ipcRenderer.invoke("open-second-window"),
-    ipcRenderer: ipcRenderer,
+contextBridge.exposeInMainWorld("preloadTest", {
+    isConnected: () => "Preload is working!",
+    get: (key) => ipcRenderer.invoke("get-store-data", key),
+    set: (key, value) => ipcRenderer.invoke("set-store-data", key, value),
 });
