@@ -8,10 +8,11 @@ import React, {
 import { GameState, TeamName } from "./game-types";
 import { ShotClockProps, TimerProps } from "../types/data";
 import { gameReducer } from "./game-reducer";
-import { initialState } from "../data/game-initial-state";
+
 import { useShotClock } from "../custom-hooks/use-shot-clock";
 import { useTimer } from "../custom-hooks/use-timer";
 import { GameActionType } from "./game-actions";
+import { initialState } from "./game-initial-state";
 
 interface GameContextType extends GameState, ShotClockProps, TimerProps {
     increasePeriod: () => void;
