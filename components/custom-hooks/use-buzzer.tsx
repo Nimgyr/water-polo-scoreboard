@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 export function useBuzzer(): () => void {
     const [sound, setSound] = useState<HTMLAudioElement | null>(null);
 
     useEffect(() => {
         const buzzer = new Audio();
-        buzzer.src = "resources/buzzer_sound.wav";
+        buzzer.src = "resources/audio/buzzer_sound.wav";
 
         setSound(buzzer);
     }, []);

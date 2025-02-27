@@ -1,6 +1,6 @@
 import { GameState } from "./game-types";
 import { GameAction, GameActionType } from "./game-actions";
-import { initialState } from "../data/game-initial-state";
+import { initialState } from "./game-initial-state";
 
 export const gameReducer = (
     state: GameState,
