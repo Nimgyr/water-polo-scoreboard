@@ -1,13 +1,56 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, screen } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { AnyAction } from '@reduxjs/toolkit'
 import icon from '../../resources/icon.png?asset'
+import { store } from './store'
+import type { RootState } from '../shared/state'
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+type WindowKind = 'primary' | 'secondary'
+
+let secondaryWindow: BrowserWindow | null = null
+
+const getExternalDisplayBounds = (): Electron.Rectangle | null => {
+  const displays = screen.getAllDisplays()
+  if (displays.length <= 1) {
+    return null
+  }
+  const primaryId = screen.getPrimaryDisplay().id
+  const externalDisplay = displays.find((display) => display.id !== primaryId)
+  return externalDisplay?.bounds ?? null
+}
+
+const placeWindowOnExternalDisplay = (window: BrowserWindow): void => {
+  const bounds = getExternalDisplayBounds()
+  if (bounds) {
+    window.setBounds(bounds)
+  }
+}
+
+const showSecondaryWindowFullscreen = (window: BrowserWindow): void => {
+  placeWindowOnExternalDisplay(window)
+  window.setFullScreen(true)
+  if (!window.isVisible()) {
+    window.show()
+  }
+  window.focus()
+}
+
+const loadRenderer = (window: BrowserWindow, kind: WindowKind): void => {
+  const query = `window=${kind}`
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    window.loadURL(`${process.env['ELECTRON_RENDERER_URL']}?${query}`)
+  } else {
+    window.loadFile(join(__dirname, '../renderer/index.html'), {
+      query: { window: kind }
+    })
+  }
+}
+
+const createAppWindow = (kind: WindowKind): BrowserWindow => {
+  const appWindow = new BrowserWindow({
+    width: kind === 'primary' ? 900 : 640,
+    height: kind === 'primary' ? 670 : 480,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -17,22 +60,83 @@ function createWindow(): void {
     }
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  appWindow.on('ready-to-show', () => {
+    appWindow.show()
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
+  appWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  appWindow.on('closed', () => {
+    if (kind === 'secondary') {
+      secondaryWindow = null
+    }
+  })
+
+  loadRenderer(appWindow, kind)
+  return appWindow
+}
+
+const getOrCreateSecondaryWindow = (): BrowserWindow => {
+  if (secondaryWindow && !secondaryWindow.isDestroyed()) {
+    if (!secondaryWindow.isVisible()) {
+      secondaryWindow.show()
+    }
+    secondaryWindow.focus()
+    return secondaryWindow
   }
+
+  secondaryWindow = createAppWindow('secondary')
+  return secondaryWindow
+}
+
+const broadcastState = (state: RootState): void => {
+  BrowserWindow.getAllWindows().forEach((window) => {
+    window.webContents.send('shared-store:state', state)
+  })
+}
+
+const registerSharedStoreBridge = (): void => {
+  store.subscribe(() => {
+    broadcastState(store.getState())
+  })
+  broadcastState(store.getState())
+
+  ipcMain.handle('shared-store:get-state', () => store.getState())
+  ipcMain.handle('shared-store:dispatch', (_event, action: AnyAction) => {
+    store.dispatch(action)
+  })
+}
+
+const registerWindowIpc = (): void => {
+  ipcMain.handle('window:open-secondary', () => {
+    const window = getOrCreateSecondaryWindow()
+    showSecondaryWindowFullscreen(window)
+  })
+
+  ipcMain.handle('window:close-secondary', () => {
+    if (secondaryWindow && !secondaryWindow.isDestroyed()) {
+      secondaryWindow.close()
+    }
+  })
+
+  ipcMain.handle('window:toggle-secondary-fullscreen', () => {
+    if (!secondaryWindow || secondaryWindow.isDestroyed()) {
+      return
+    }
+
+    const shouldEnterFullscreen = !secondaryWindow.isFullScreen()
+    if (shouldEnterFullscreen) {
+      showSecondaryWindowFullscreen(secondaryWindow)
+      return
+    }
+
+    secondaryWindow.setFullScreen(false)
+    secondaryWindow.center()
+    secondaryWindow.focus()
+  })
 }
 
 // This method will be called when Electron has finished
@@ -49,15 +153,17 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  registerSharedStoreBridge()
+  registerWindowIpc()
 
-  createWindow()
+  createAppWindow('primary')
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createAppWindow('primary')
+    }
   })
 })
 
