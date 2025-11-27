@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import type { AnyAction } from '@reduxjs/toolkit'
-import type { RootState } from '../shared/state'
+import type { RootState } from '../renderer/src/shared/state'
 
 interface SharedStoreBridge {
   dispatch: (action: AnyAction) => Promise<void>

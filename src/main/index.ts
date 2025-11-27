@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { AnyAction } from '@reduxjs/toolkit'
 import icon from '../../resources/icon.png?asset'
 import { store } from './store'
-import type { RootState } from '../shared/state'
+import type { RootState } from '../renderer/src/shared/state'
 
 type WindowKind = 'primary' | 'secondary'
 

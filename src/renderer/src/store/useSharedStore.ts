@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
-import type { AnyAction } from '@reduxjs/toolkit'
-import type { RootState } from '../../../shared/state'
+import type { UnknownAction } from '@reduxjs/toolkit'
+import type { RootState } from '../shared/state'
 
 type Listener = () => void
 
@@ -54,7 +54,6 @@ export const useSharedSelector = <T>(selector: (state: RootState) => T): T => {
   return useSyncExternalStore(subscribe, () => selector(getSnapshot()))
 }
 
-export const dispatchSharedAction = (action: AnyAction): Promise<void> => {
+export const dispatchSharedAction = (action: UnknownAction): Promise<void> => {
   return window.sharedStore.dispatch(action)
 }
-

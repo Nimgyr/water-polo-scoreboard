@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { sharedReducers } from '../shared/state'
+import { sharedReducers } from '../renderer/src/shared/state'
 
 export const store = configureStore({
   reducer: sharedReducers
 })
-

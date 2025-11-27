@@ -9,4 +9,3 @@ export type RootState = {
 }
 
 export { scoreboardSlice }
-
